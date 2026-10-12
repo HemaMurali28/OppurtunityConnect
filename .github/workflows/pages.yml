@@ -17,28 +17,42 @@ concurrency:
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
-    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
       - name: Prepare frontend
         run: |
-          cd OpportunityConnect/FRONTEND
-          if [ -f INDEX.HTML ]; then mv INDEX.HTML index.html; fi
+          cd PDSS/OpportunityConnect/FRONTEND
+
+          if [ -f INDEX.HTML ]; then
+            mv INDEX.HTML index.html
+          fi
+
+          if [ -f STYLE.CSS ]; then
+            mv STYLE.CSS style.css
+          fi
+
+          if [ -f APP.JS ]; then
+            mv APP.JS app.js
+          fi
+
+          sed -i 's/STYLE\.CSS/style.css/g' index.html
+          sed -i 's/APP\.JS/app.js/g' index.html
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload frontend
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./OpportunityConnect/FRONTEND
+          path: ./PDSS/OpportunityConnect/FRONTEND
 
       - name: Deploy website
         id: deployment
